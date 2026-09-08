@@ -1,0 +1,56 @@
+---
+/**
+ * Ilustración abstracta de la pantalla de escaneo.
+ *
+ * NO es una captura del producto: la app todavía no existe. Va con
+ * aria-hidden porque no aporta información, sólo contexto visual.
+ */
+---
+
+<div data-always-dark aria-hidden="true" class="relative mx-auto w-full max-w-[280px] animate-float">
+  <div class="relative overflow-hidden rounded-[2rem] border-8 border-ink bg-ink shadow-2xl">
+    <div class="relative aspect-[9/19] bg-gradient-to-b from-brand to-ink">
+      <!-- Visor de cámara -->
+      <div class="absolute inset-x-6 top-16 aspect-square rounded-2xl border-2 border-white/25">
+        <span class="absolute -top-px -left-px h-6 w-6 rounded-tl-2xl border-t-4 border-l-4 border-white"></span>
+        <span class="absolute -top-px -right-px h-6 w-6 rounded-tr-2xl border-t-4 border-r-4 border-white"></span>
+        <span class="absolute -bottom-px -left-px h-6 w-6 rounded-bl-2xl border-b-4 border-l-4 border-white"></span>
+        <span class="absolute -right-px -bottom-px h-6 w-6 rounded-br-2xl border-r-4 border-b-4 border-white"></span>
+
+        <!-- Retícula que insinúa un QR, sin serlo -->
+        <div class="absolute inset-8 grid grid-cols-5 grid-rows-5 gap-1 opacity-40">
+          <span class="col-span-2 row-span-2 rounded-sm border-4 border-white"></span>
+          <span class="col-start-4 rounded-sm bg-white"></span>
+          <span class="col-start-5 row-start-2 rounded-sm bg-white"></span>
+          <span class="col-start-4 col-end-6 row-span-2 row-start-4 rounded-sm border-4 border-white"></span>
+          <span class="col-start-1 row-start-4 rounded-sm bg-white"></span>
+          <span class="col-start-2 row-start-5 rounded-sm bg-white"></span>
+          <span class="col-start-3 row-start-3 rounded-sm bg-white"></span>
+        </div>
+
+        <!-- Línea de escaneo -->
+        <div class="animate-scan absolute inset-x-2 top-2 h-0.5 rounded-full bg-accent shadow-[0_0_12px_2px] shadow-accent"></div>
+      </div>
+
+      <!-- Indicador de distancia: es la señal que define el producto -->
+      <div class="absolute inset-x-6 bottom-20 rounded-2xl bg-white/10 p-3 backdrop-blur-sm">
+        <div class="flex items-center gap-2.5">
+          <span class="relative grid h-8 w-8 shrink-0 place-items-center">
+            <span class="animate-halo absolute inset-0 rounded-full bg-ok/60"></span>
+            <span class="relative h-2.5 w-2.5 rounded-full bg-ok"></span>
+          </span>
+          <div class="min-w-0 flex-1">
+            <span class="block h-1.5 w-16 rounded-full bg-white/70"></span>
+            <span class="mt-1.5 block h-1.5 w-24 rounded-full bg-white/30"></span>
+          </div>
+          <span class="shrink-0 rounded-full bg-ok px-2 py-0.5 text-[10px] font-bold text-white">
+            1.4 m
+          </span>
+        </div>
+      </div>
+
+      <!-- Botón de la app -->
+      <div class="absolute inset-x-6 bottom-6 h-10 rounded-xl bg-accent"></div>
+    </div>
+  </div>
+</div>

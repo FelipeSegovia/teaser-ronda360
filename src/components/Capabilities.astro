@@ -1,0 +1,22 @@
+---
+import { es } from '../i18n/es';
+---
+
+<section class="border-y border-hairline bg-surface-alt">
+  <div class="container-page py-16 sm:py-24">
+    <h2 class="max-w-2xl text-3xl font-bold tracking-tight text-balance sm:text-4xl" data-reveal>
+      {es.caps.title}
+    </h2>
+
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {es.caps.items.map((item, i) => (
+        <article data-reveal style={`--reveal-delay: ${(i % 3) * 100}ms`}>
+          <div class="surface-card h-full rounded-2xl border border-hairline bg-surface p-6">
+            <h3 class="text-lg font-semibold">{item.title}</h3>
+            <p class="mt-2.5 text-ink-soft">{item.body}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

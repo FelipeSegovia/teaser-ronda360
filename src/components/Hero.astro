@@ -1,0 +1,48 @@
+---
+import { es } from '../i18n/es';
+import AppMockup from './AppMockup.astro';
+---
+
+<section id="hero" class="relative overflow-hidden">
+  <!-- Fondo decorativo -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute -top-40 -right-32 h-[32rem] w-[32rem] rounded-full bg-brand/10 blur-3xl"></div>
+    <div class="absolute -bottom-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-accent/10 blur-3xl"></div>
+  </div>
+
+  <div class="container-page grid items-center gap-12 py-16 sm:py-24 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+    <div data-reveal>
+      <p class="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/5 px-3.5 py-1.5 text-sm font-medium text-brand">
+        <span class="relative flex h-2 w-2" aria-hidden="true">
+          <span class="animate-halo absolute inline-flex h-full w-full rounded-full bg-accent"></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
+        </span>
+        {es.hero.badge}
+      </p>
+
+      <h1 class="mt-6 text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+        {es.hero.title}
+      </h1>
+
+      <p class="mt-6 max-w-xl text-lg text-pretty text-ink-soft sm:text-xl">
+        {es.hero.subtitle}
+      </p>
+
+      <div class="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+        <button
+          type="button"
+          data-open-contact
+          aria-haspopup="dialog"
+          class="w-full shrink-0 rounded-xl bg-brand px-7 py-4 text-base font-semibold whitespace-nowrap text-on-brand transition hover:-translate-y-0.5 hover:bg-brand-dark hover:shadow-xl focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:outline-none sm:w-auto"
+        >
+          {es.hero.cta}
+        </button>
+        <p class="text-sm text-ink-soft">{es.hero.note}</p>
+      </div>
+    </div>
+
+    <div data-reveal style="--reveal-delay: 150ms">
+      <AppMockup />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,26 @@
+---
+import { es } from '../i18n/es';
+---
+
+<section class="border-y border-hairline bg-surface-alt">
+  <div class="container-page grid gap-10 py-16 sm:py-20 lg:grid-cols-2 lg:gap-16">
+    <div data-reveal>
+      <h2 class="text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+        {es.problem.title}
+      </h2>
+      <p class="mt-5 text-lg text-pretty text-ink-soft">{es.problem.body}</p>
+    </div>
+
+    <ul class="space-y-4" data-reveal style="--reveal-delay: 120ms">
+      {es.problem.points.map((point) => (
+        <li class="flex items-start gap-3 rounded-xl border border-hairline bg-surface p-4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 h-5 w-5 shrink-0 text-bad" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M15 9l-6 6M9 9l6 6" stroke-linecap="round" />
+          </svg>
+          <span class="text-ink-soft">{point}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,138 @@
+---
+/**
+ * Loader de entrada (RF-1).
+ *
+ * Sus estilos van en un bloque con `is:inline`, que Astro deja fuera del
+ * procesamiento de Vite: pinta sin esperar la hoja de Tailwind. Es la única
+ * parte del proyecto con estilos fuera de global.css, y es deliberado.
+ *
+ * El cierre se registra por tres vías independientes y la primera que dispara
+ * gana. El riesgo real de un loader es quedarse pegado, no tardar de más.
+ */
+import { es } from '../i18n/es';
+---
+
+<style is:inline>
+  /* Los hex de abajo duplican @theme A PROPOSITO: este bloque pinta antes que
+     la hoja de Tailwind, asi que no puede usar los tokens. Si cambia la paleta
+     en global.css, hay que actualizarlos aqui a la par.
+
+     CLARO:  #ffffff = --color-surface · #D9E1EA = --color-hairline
+             #1B3561 = --color-brand   · #27D3BC = --color-accent
+     OSCURO: #16273A = --dark-surface  · #2A3F58 = --dark-hairline
+             #27D3BC = --dark-brand    · #5CE0CE = --dark-brand-hover
+
+     Las dos condiciones son las mismas que en global.css: sin el bloque oscuro,
+     el loader destellaria en blanco a pantalla completa antes de que Tailwind
+     llegue a pintar. */
+  #site-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    background: #ffffff;
+    transition: opacity 0.4s ease;
+  }
+
+  #site-loader.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .site-loader__mark {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+  }
+
+  .site-loader__ring {
+    position: absolute;
+    inset: 0;
+    border: 3px solid #D9E1EA;
+    border-top-color: #1B3561;
+    border-radius: 9999px;
+    animation: site-loader-spin 0.8s linear infinite;
+  }
+
+  .site-loader__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
+    background: #27D3BC;
+    animation: site-loader-pulse 1.2s ease-in-out infinite;
+  }
+
+  /* Sistema en oscuro, salvo que el visitante haya forzado claro. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) #site-loader { background: #16273A; }
+    :root:not([data-theme="light"]) .site-loader__ring {
+      border-color: #2A3F58;
+      border-top-color: #27D3BC;
+    }
+    :root:not([data-theme="light"]) .site-loader__dot { background: #5CE0CE; }
+  }
+
+  /* Eleccion explicita de oscuro. */
+  :root[data-theme="dark"] #site-loader { background: #16273A; }
+  :root[data-theme="dark"] .site-loader__ring {
+    border-color: #2A3F58;
+    border-top-color: #27D3BC;
+  }
+  :root[data-theme="dark"] .site-loader__dot { background: #5CE0CE; }
+
+  @keyframes site-loader-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes site-loader-pulse {
+    0%, 100% { transform: scale(0.7); opacity: 0.5; }
+    50%      { transform: scale(1); opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #site-loader { transition: none; }
+    .site-loader__ring,
+    .site-loader__dot { animation: none; }
+  }
+</style>
+
+<div id="site-loader" role="status" aria-live="polite" aria-label={es.loader.label}>
+  <div class="site-loader__mark">
+    <span class="site-loader__ring"></span>
+    <span class="site-loader__dot"></span>
+  </div>
+</div>
+
+<script is:inline>
+  // Sin type="module" a propósito: debe correr aunque el bundle principal
+  // falle al cargar. Si el loader dependiera del bundle, un error de red
+  // dejaría la página tapada para siempre.
+  (function () {
+    var TIMEOUT_MS = 2500;
+    var done = false;
+
+    function hide() {
+      if (done) return;
+      done = true;
+      var el = document.getElementById('site-loader');
+      if (!el) return;
+      el.classList.add('is-hidden');
+      window.setTimeout(function () {
+        el.setAttribute('hidden', '');
+      }, 450);
+    }
+
+    if (document.readyState === 'complete') {
+      // Vía 1: la página ya estaba completa (navegación con caché).
+      hide();
+    } else {
+      // Vía 2: camino normal.
+      window.addEventListener('load', hide);
+      // Vía 3: red de seguridad si una imagen o un script nunca resuelve.
+      window.setTimeout(hide, TIMEOUT_MS);
+    }
+  })();
+</script>

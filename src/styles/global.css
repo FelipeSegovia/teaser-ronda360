@@ -1,0 +1,345 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Tokens de marca. En Tailwind v4, @theme genera a la vez las variables CSS y
+   las utilidades (bg-brand, text-ink, border-hairline...).
+   El token de borde se llama `hairline` a propósito: `--color-border` generaría
+   la utilidad `border-border`, que se confunde con la utilidad de ancho.
+
+   Los tres colores de la paleta se declaran aquí UNA SOLA VEZ. Los tokens que
+   repiten un color lo referencian con var() en lugar de duplicar el hex.
+   La única copia fuera de este bloque es el <style is:inline> de Loader.astro,
+   que pinta antes que la hoja de Tailwind y por eso no puede usar tokens.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-surface:     #FFFFFF;
+  --color-surface-alt: #F4F7FB;
+
+  /* Paleta de marca: los tres únicos hex de color del proyecto. */
+  --color-deep:        #1B3561;  /* secundario — azul profundo: el VALOR */
+  --color-night:       #001C32;  /* primario   — azul noche: el VALOR */
+  --color-accent:      #27D3BC;  /* terciario  — turquesa: acento */
+
+  --color-brand:       var(--color-deep);  /* rol: color de acción */
+
+  /* Roles derivados del primario. Se separan del valor porque en tema oscuro
+     algunos cambian y otros no: `brand-dark` es el hover del CTA y sí cambia;
+     `footer` NO puede cambiar nunca, porque el logotipo de Orbital Studio es
+     blanco sobre negro opaco y necesita fondo oscuro detrás (spec 004 RF-8). */
+  --color-brand-dark:  var(--color-night);  /* hover del CTA */
+  --color-ink:         var(--color-night);  /* texto principal */
+  --color-footer:      var(--color-night);  /* fijo en ambos temas */
+
+  /* Neutros con tinte navy, para que no desentonen contra el azul noche. */
+  --color-ink-soft:    #4A5A72;  /* 7.01:1 sobre blanco */
+  --color-hairline:    #D9E1EA;
+
+  /* Señales de estado, NO colores de marca: no se reemplazan por el turquesa.
+     Se separa valor de rol porque en oscuro cambian de tono, pero la
+     ilustración del teléfono necesita los valores fuertes siempre. */
+  --color-ok-strong:   #047857;
+  --color-bad-strong:  #B91C1C;
+  --color-ok:          var(--color-ok-strong);
+  --color-bad:         var(--color-bad-strong);
+
+  /* Blanco sobre el color de acción en claro; navy en oscuro (spec 004). */
+  --color-on-brand:    #FFFFFF;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+
+  --animate-scan: scan 3.2s ease-in-out infinite;
+  --animate-halo: halo 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   Tema oscuro (spec 004).
+
+   El bloque @theme de arriba ES el tema claro y no se toca. Como las utilidades
+   de Tailwind v4 leen los tokens con var(), basta redefinir las variables para
+   repintar la landing entera: ningún componente lleva variantes `dark:`.
+
+   Los VALORES oscuros se declaran una sola vez aquí abajo. Lo que se repite es
+   la lista de asignaciones, porque hay dos formas distintas de estar en oscuro
+   y CSS no permite compartir un bloque entre una media query y un selector:
+
+     - sin atributo            -> manda el sistema  (estado «sistema», el defecto)
+     - [data-theme="light"]    -> claro siempre; el :not() anula la media query
+     - [data-theme="dark"]     -> oscuro siempre
+
+   `light-dark()` habría evitado la repetición con un solo valor por token, pero
+   las utilidades con opacidad que ya usamos (bg-ink/55, bg-accent/10) compilan
+   a color-mix(), y su comportamiento sobre un light-dark() sin resolver no está
+   verificado aquí. Un fallo ahí sería silencioso, así que se descartó.
+--------------------------------------------------------------------------- */
+:root {
+  color-scheme: light dark;
+
+  --dark-surface:     #16273A;
+  --dark-surface-alt: #1C3049;
+  --dark-ink:         #E6EDF5;  /* 12.85:1 sobre la superficie oscura */
+  --dark-ink-soft:    #A8B8CC;  /* 7.50:1 */
+  --dark-hairline:    #2A3F58;
+
+  /* El turquesa pasa a ser el color de acción SOLO en oscuro: #1B3561 como
+     botón da 1.42:1 contra la superficie y sería invisible. Con texto navy
+     encima da 9.18:1 de texto y 8.03:1 de borde.
+     En tema claro sigue prohibido como fondo de texto (1.89:1 sobre blanco,
+     spec 002 RF-3). */
+  --dark-brand:       #27D3BC;
+  --dark-on-brand:    #001C32;
+  /* En claro el hover OSCURECE; en oscuro aclara, que es la convención inversa.
+     Mapearlo a la superficie haría desaparecer el botón al pasar el cursor. */
+  --dark-brand-hover: #5CE0CE;  /* texto navy 10.73:1 · 9.39:1 contra la superficie */
+
+  /* Las señales de estado cambian de VALOR, no de significado: los tonos
+     claros dan 3.14:1 y 2.66:1 sobre fondo oscuro e incumplen AA. */
+  --dark-ok:          #34D399;  /* 7.88:1 */
+  --dark-bad:         #F87171;  /* 5.48:1 */
+}
+
+/* Sistema en oscuro, salvo que el visitante haya forzado claro. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-surface:     var(--dark-surface);
+    --color-surface-alt: var(--dark-surface-alt);
+    --color-ink:         var(--dark-ink);
+    --color-ink-soft:    var(--dark-ink-soft);
+    --color-hairline:    var(--dark-hairline);
+    --color-brand:       var(--dark-brand);
+    --color-brand-dark:  var(--dark-brand-hover);
+    --color-on-brand:    var(--dark-on-brand);
+    --color-ok:          var(--dark-ok);
+    --color-bad:         var(--dark-bad);
+  }
+}
+
+/* Elección explícita de oscuro, gane o no la preferencia del sistema. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-surface:     var(--dark-surface);
+  --color-surface-alt: var(--dark-surface-alt);
+  --color-ink:         var(--dark-ink);
+  --color-ink-soft:    var(--dark-ink-soft);
+  --color-hairline:    var(--dark-hairline);
+  --color-brand:       var(--dark-brand);
+  --color-brand-dark:  var(--dark-brand-hover);
+  --color-on-brand:    var(--dark-on-brand);
+  --color-ok:          var(--dark-ok);
+  --color-bad:         var(--dark-bad);
+}
+
+/* Elección explícita de claro. */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* ---------------------------------------------------------------------------
+   Islas que NO siguen el tema.
+
+   La ilustración del teléfono representa la pantalla de la app, que es oscura
+   siempre: si siguiera al tema, en oscuro el teléfono se volvería claro y el
+   chip verde perdería el contraste de su texto blanco. Se le fijan los tokens
+   que usa a sus valores invariantes.
+--------------------------------------------------------------------------- */
+[data-always-dark] {
+  --color-ink:   var(--color-night);
+  --color-brand: var(--color-deep);
+  --color-ok:    var(--color-ok-strong);
+}
+
+/* Tailwind v4 eliminó el plugin `container`. */
+@utility container-page {
+  margin-inline: auto;
+  max-width: 1120px;
+  padding-inline: 1.5rem;
+}
+
+@keyframes scan {
+  0%, 100% { transform: translateY(0); opacity: 0; }
+  10%      { opacity: 1; }
+  90%      { opacity: 1; }
+  50%      { transform: translateY(150px); }
+}
+
+@keyframes halo {
+  0%   { transform: scale(0.6); opacity: 0.7; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+/* ---------------------------------------------------------------------------
+   Estilos que dependen de una clase o atributo que alterna el JS. Tailwind no
+   expresa bien este caso, así que van en CSS plano.
+--------------------------------------------------------------------------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hover de las tarjetas de contenido (pasos y capacidades).
+   Vive en un hijo, no en [data-reveal]: si comparten `transform`, el delay
+   del stagger se cuela en el hover (o se pierde el stagger).
+   Lift de 2 px y 450 ms con la curva de llegada del sitio — no los 4 px /
+   150 ms de `hover:-translate-y-1` + `shadow-lg`.
+   Solo en puntero fino: en táctil `:hover` se queda pegado. */
+.surface-card {
+  transition:
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .surface-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 1px 0 var(--color-hairline),
+      0 12px 32px color-mix(in srgb, var(--color-night) 8%, transparent);
+  }
+}
+
+/* Logotipo: dos archivos (claro / oscuro). No se usa `dark:` porque el tema
+   también se fuerza con data-theme, igual que el resto de tokens. */
+.theme-dark-only {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-light-only {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .theme-dark-only {
+    display: block;
+  }
+}
+
+:root[data-theme="dark"] .theme-light-only {
+  display: none;
+}
+:root[data-theme="dark"] .theme-dark-only {
+  display: block;
+}
+
+:root[data-theme="light"] .theme-light-only {
+  display: block;
+}
+:root[data-theme="light"] .theme-dark-only {
+  display: none;
+}
+
+.site-header {
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.site-header.is-stuck {
+  background-color: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 1px 0 var(--color-hairline),
+    0 8px 24px color-mix(in srgb, var(--color-night) 6%, transparent);
+}
+
+.floating-cta {
+  opacity: 0;
+  transform: translateY(12px) scale(0.96);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.floating-cta.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* El backdrop del <dialog> nativo no se alcanza con utilidades.
+   Usa --color-night y no --color-ink: un velo debe oscurecer en los dos temas,
+   y --color-ink se invierte a casi blanco en oscuro. */
+dialog::backdrop {
+  background-color: color-mix(in srgb, var(--color-night) 55%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+/* Apertura y cierre del diálogo de contacto.
+   `display`/`overlay` con `allow-discrete` dejan correr la transición al
+   cerrar; `@starting-style` es lo que anima también la entrada (sin eso el
+   estado [open] nace ya en opacidad 1). */
+#contact-dialog {
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+  transition:
+    opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    overlay 0.28s allow-discrete,
+    display 0.28s allow-discrete;
+}
+
+#contact-dialog[open] {
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  #contact-dialog[open] {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+}
+
+#contact-dialog::backdrop {
+  opacity: 0;
+  transition:
+    opacity 0.28s ease,
+    overlay 0.28s allow-discrete,
+    display 0.28s allow-discrete;
+}
+
+#contact-dialog[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  #contact-dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Interruptor global de movimiento reducido.
+   Deliberadamente NO se usa la variante `motion-reduce:` de Tailwind: habría
+   que repetirla en cada elemento animado y basta olvidar uno para incumplir el
+   criterio de aceptación. Un interruptor global no se puede olvidar.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .surface-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}

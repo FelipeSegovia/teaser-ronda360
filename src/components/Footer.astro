@@ -1,0 +1,52 @@
+---
+/**
+ * Footer con la marca de Orbital Studio (RF-7).
+ *
+ * El PNG del logo es blanco sobre negro OPACO, sin canal alfa. Sobre fondo
+ * claro se vería como un rectángulo negro. Por eso el footer es oscuro y la
+ * imagen usa `mix-blend-screen`: el negro (0) queda exactamente en el color de
+ * fondo —invisible— y el blanco (1) se mantiene intacto.
+ *
+ * OJO: `isolate` va en el <footer>, que es quien tiene el fondo. Si se pone en
+ * el contenedor inmediato de la imagen, se aísla el blend DEL fondo del footer
+ * y el logo vuelve a verse como un rectángulo negro.
+ */
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+import { es } from '../i18n/es';
+import { site } from '../config/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="isolate border-t border-hairline bg-footer text-white/70">
+  <div class="container-page flex flex-col items-center gap-8 py-12 text-center sm:py-16">
+    <div>
+      <Image
+        src={logo}
+        alt={es.footer.logoAlt}
+        width={180}
+        densities={[1, 2]}
+        loading="lazy"
+        class="h-auto w-[180px] mix-blend-screen"
+      />
+    </div>
+
+    <div class="space-y-2">
+      <p class="text-white">{es.footer.tagline}</p>
+      <p>
+        {es.footer.contactIntro}{' '}
+        <a
+          href={`mailto:${site.contactEmail}`}
+          class="inline-flex min-h-11 items-center text-accent underline underline-offset-4 transition hover:text-accent/80"
+        >
+          {site.contactEmail}
+        </a>
+      </p>
+    </div>
+
+    <p class="text-sm text-white/50">
+      © {year} {site.companyName}. {es.footer.rights}
+    </p>
+  </div>
+</footer>

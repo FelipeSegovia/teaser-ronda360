@@ -1,0 +1,374 @@
+---
+/**
+ * Diálogo de contacto (RF-2 a RF-5 de la spec 003).
+ *
+ * La rama se decide EN BUILD, no en el cliente. `RESEND_API_KEY` vive en
+ * servidor (`contact-config.ts`); si está definida en el build, sólo la rama
+ * del formulario llega al HTML. El envío va a una Action (Resend), no al
+ * cliente.
+ *
+ * Antes se horneaban las dos ramas con `hidden` y el JS revelaba una. De ahí
+ * salían dos defectos que eran el mismo: `focus()` fallaba en silencio sobre el
+ * input oculto —y el foco caía en «Cerrar»— y `aria-describedby` apuntaba a un
+ * párrafo dentro del contenedor oculto.
+ *
+ * Usa el <dialog> nativo: trampa de foco, Esc y backdrop sin librería.
+ * Lo abre cualquier elemento con [data-open-contact].
+ */
+import { es } from '../i18n/es';
+import { site } from '../config/site';
+import { isConfigured } from '../lib/contact-config';
+import { contactSubject } from '../lib/contact';
+
+const d = es.dialog;
+
+const configured = isConfigured();
+
+// El asunto se comparte con el envío del formulario (src/lib/contact.ts).
+const mailtoHref = `mailto:${site.contactEmail}?subject=${encodeURIComponent(contactSubject())}`;
+---
+
+<dialog
+  id="contact-dialog"
+  aria-labelledby="contact-dialog-title"
+  aria-describedby="contact-dialog-body"
+  class="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-2xl border border-hairline bg-surface p-0 text-ink shadow-2xl backdrop:bg-night/55"
+>
+  <div class="relative p-6 sm:p-8">
+    <!-- 44x44 de área pulsable; el icono se queda en 20px. -->
+    <button
+      type="button"
+      data-close-contact
+      aria-label={d.close}
+      class="absolute top-3 right-3 grid h-11 w-11 place-items-center rounded-full text-ink-soft transition hover:bg-surface-alt hover:text-ink focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none"
+    >
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5" aria-hidden="true">
+        <path d="M5 5l10 10M15 5L5 15" stroke-linecap="round" />
+      </svg>
+    </button>
+
+    <h2 id="contact-dialog-title" class="pr-14 text-2xl font-semibold tracking-tight">
+      {configured ? d.title : d.notConfiguredTitle}
+    </h2>
+
+    {configured ? (
+      <div>
+        <p id="contact-dialog-body" class="mt-3 text-ink-soft">{d.body}</p>
+
+        <form id="contact-form" data-state="idle" novalidate class="group mt-6">
+          <!-- Trampa de spam: invisible para personas, tentadora para bots. -->
+          <div class="absolute h-px w-px overflow-hidden opacity-0" aria-hidden="true">
+            <label for="contact-botcheck">{d.honeypotLabel}</label>
+            <input id="contact-botcheck" name="botcheck" type="checkbox" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="group-data-[state=success]:hidden">
+            <label for="contact-email" class="block text-sm font-medium">
+              {d.emailLabel}
+            </label>
+            <input
+              id="contact-email"
+              name="email"
+              type="email"
+              required
+              autocomplete="email"
+              placeholder={d.emailPlaceholder}
+              aria-describedby="contact-email-error"
+              class="mt-1.5 w-full rounded-xl border border-hairline bg-surface px-4 py-3 text-ink placeholder:text-ink-soft/60 focus:border-brand focus:ring-2 focus:ring-brand/30 focus:outline-none aria-[invalid=true]:border-bad aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-bad/20"
+            />
+            <p id="contact-email-error" aria-live="polite" class="mt-1.5 min-h-5 text-sm text-bad"></p>
+
+            <label for="contact-comment" class="mt-4 block text-sm font-medium">
+              {d.commentLabel}{' '}
+              <span class="font-normal text-ink-soft">({d.commentOptional})</span>
+            </label>
+            <textarea
+              id="contact-comment"
+              name="comment"
+              rows="3"
+              placeholder={d.commentPlaceholder}
+              class="mt-1.5 w-full resize-y rounded-xl border border-hairline bg-surface px-4 py-3 text-ink placeholder:text-ink-soft/60 focus:border-brand focus:ring-2 focus:ring-brand/30 focus:outline-none"
+            ></textarea>
+
+            <button
+              type="submit"
+              class="mt-5 w-full rounded-xl bg-brand px-6 py-3 font-semibold text-on-brand transition hover:bg-brand-dark focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <span class="group-data-[state=sending]:hidden">{d.submit}</span>
+              <span class="hidden group-data-[state=sending]:inline">{d.sending}</span>
+            </button>
+
+            <p class="mt-3 hidden text-sm text-bad group-data-[state=error]:block">
+              <span class="font-medium">{d.errorTitle}.</span>{' '}
+              {d.errorBody}{' '}
+              <a href={mailtoHref} class="underline underline-offset-2">
+                {site.contactEmail}
+              </a>
+            </p>
+          </div>
+
+          <div class="hidden group-data-[state=success]:block" role="status">
+            <div class="mt-4 flex items-start gap-3 rounded-xl bg-surface-alt p-4">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 h-6 w-6 shrink-0 text-ok" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <div>
+                <p class="font-medium text-ink">{d.successTitle}</p>
+                <p class="mt-1 text-sm text-ink-soft">{d.successBody}</p>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    ) : (
+      <div>
+        <p id="contact-dialog-body" class="mt-3 text-ink-soft">
+          {d.notConfiguredBody}{' '}
+          <span class="font-medium break-words text-ink">{site.contactEmail}</span>
+        </p>
+
+        <!-- El correo como acción, no como enlace de texto de 18px de alto. -->
+        <a
+          href={mailtoHref}
+          data-primary-action
+          class="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-6 py-3 font-semibold text-on-brand transition hover:bg-brand-dark focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:outline-none"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5 shrink-0" aria-hidden="true">
+            <path d="M3 7l9 6 9-6" stroke-linecap="round" stroke-linejoin="round" />
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+          </svg>
+          {d.openMail}
+        </a>
+
+        <!-- Sin cliente de correo configurado, el mailto no hace nada. -->
+        <button
+          type="button"
+          data-copy-email={site.contactEmail}
+          class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-hairline px-6 py-3 font-medium text-ink transition hover:bg-surface-alt focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:outline-none"
+        >
+          {d.copyEmail}
+        </button>
+
+        <p
+          data-copy-status
+          role="status"
+          aria-live="polite"
+          class="copy-status mt-3 flex min-h-6 items-center justify-center gap-1.5 text-sm font-medium"
+        >
+          <svg
+            class="copy-status-check h-4 w-4 shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            aria-hidden="true"
+          >
+            <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span data-copy-status-text></span>
+        </p>
+      </div>
+    )}
+  </div>
+</dialog>
+
+<script>
+  import { isValidEmail, submitContact } from '../lib/contact';
+  import { es } from '../i18n/es';
+
+  const dialog = document.querySelector<HTMLDialogElement>('#contact-dialog');
+  const form = document.querySelector<HTMLFormElement>('#contact-form');
+  const emailInput = document.querySelector<HTMLInputElement>('#contact-email');
+  const emailError = document.querySelector<HTMLParagraphElement>('#contact-email-error');
+
+  if (dialog) {
+    // Sólo existe una rama, así que no hay nada que revelar: se enfoca lo que haya.
+    const focusTarget =
+      dialog.querySelector<HTMLElement>('#contact-email') ??
+      dialog.querySelector<HTMLElement>('[data-primary-action]');
+
+    // Quién abrió el diálogo, para devolverle el foco al cerrar.
+    let opener: HTMLElement | null = null;
+
+    document.addEventListener('click', (event) => {
+      const trigger = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-open-contact]');
+      if (!trigger) return;
+      event.preventDefault();
+      opener = trigger;
+      dialog.showModal();
+      // Sin esto el foco queda en el primer accionable, que es «Cerrar».
+      focusTarget?.focus();
+    });
+
+    dialog.addEventListener('click', (event) => {
+      // Clic en el backdrop: el target es el propio <dialog>.
+      if (event.target === dialog) dialog.close();
+      if ((event.target as HTMLElement | null)?.closest('[data-close-contact]')) dialog.close();
+    });
+
+    // Cubre tanto el botón de cerrar como Esc.
+    dialog.addEventListener('close', () => {
+      resetCopyStatus();
+      opener?.focus();
+      opener = null;
+    });
+
+    const copyButton = dialog.querySelector<HTMLButtonElement>('[data-copy-email]');
+    const copyStatus = dialog.querySelector<HTMLParagraphElement>('[data-copy-status]');
+    const copyStatusText = dialog.querySelector<HTMLElement>('[data-copy-status-text]');
+    let copyTimer: number | undefined;
+    let copyClearTimer: number | undefined;
+
+    function resetCopyStatus(): void {
+      window.clearTimeout(copyTimer);
+      window.clearTimeout(copyClearTimer);
+      copyStatus?.classList.remove('is-shown');
+      copyStatus?.removeAttribute('data-kind');
+      if (copyStatusText) copyStatusText.textContent = '';
+    }
+
+    /** Respaldo para contextos sin API de portapapeles (http, navegadores viejos). */
+    function copyFallback(text: string): boolean {
+      const scratch = document.createElement('textarea');
+      scratch.value = text;
+      scratch.setAttribute('readonly', '');
+      scratch.style.cssText = 'position:fixed;top:-9999px;opacity:0';
+      document.body.appendChild(scratch);
+      scratch.select();
+      let ok = false;
+      try {
+        ok = document.execCommand('copy');
+      } catch {
+        ok = false;
+      }
+      scratch.remove();
+      return ok;
+    }
+
+    copyButton?.addEventListener('click', async () => {
+      const email = copyButton.dataset.copyEmail ?? '';
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(email);
+        ok = true;
+      } catch {
+        ok = copyFallback(email);
+      }
+
+      if (copyStatus && copyStatusText) {
+        window.clearTimeout(copyTimer);
+        window.clearTimeout(copyClearTimer);
+        copyStatus.classList.remove('is-shown');
+        // Reinicia la animación si se vuelve a pulsar antes de que expire.
+        void copyStatus.offsetWidth;
+        copyStatus.dataset.kind = ok ? 'ok' : 'bad';
+        copyStatusText.textContent = ok ? es.dialog.copied : es.dialog.copyFailed;
+        copyStatus.classList.add('is-shown');
+        copyTimer = window.setTimeout(() => {
+          copyStatus.classList.remove('is-shown');
+          copyClearTimer = window.setTimeout(() => {
+            copyStatusText.textContent = '';
+            copyStatus.removeAttribute('data-kind');
+          }, 350);
+        }, 3000);
+      }
+    });
+  }
+
+  function setState(state: 'idle' | 'sending' | 'success' | 'error'): void {
+    form?.setAttribute('data-state', state);
+    const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled = state === 'sending';
+  }
+
+  function showEmailError(message: string): void {
+    if (emailError) emailError.textContent = message;
+    emailInput?.setAttribute('aria-invalid', message ? 'true' : 'false');
+  }
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (form.getAttribute('data-state') === 'sending') return;
+
+    const email = emailInput?.value ?? '';
+    const comment =
+      form.querySelector<HTMLTextAreaElement>('#contact-comment')?.value ?? '';
+    const botcheck =
+      form.querySelector<HTMLInputElement>('#contact-botcheck')?.checked ?? false;
+
+    if (botcheck) {
+      // Bot: se finge éxito y no se envía nada.
+      setState('success');
+      return;
+    }
+
+    showEmailError('');
+    if (!isValidEmail(email)) {
+      showEmailError(es.dialog.emailInvalid);
+      emailInput?.focus();
+      return;
+    }
+
+    setState('sending');
+    const result = await submitContact({ email, comment });
+    setState(result.ok ? 'success' : 'error');
+  });
+</script>
+
+<style>
+  .copy-status {
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition:
+      opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .copy-status.is-shown {
+    opacity: 1;
+    transform: none;
+  }
+
+  .copy-status[data-kind='ok'] {
+    color: var(--color-ok);
+  }
+
+  .copy-status[data-kind='bad'] {
+    color: var(--color-bad);
+  }
+
+  .copy-status[data-kind='bad'] .copy-status-check {
+    display: none;
+  }
+
+  .copy-status-check path {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+  }
+
+  .copy-status[data-kind='ok'].is-shown .copy-status-check {
+    animation: copy-check-pop 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .copy-status[data-kind='ok'].is-shown .copy-status-check path {
+    animation: copy-check-draw 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+  }
+
+  @keyframes copy-check-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.55);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes copy-check-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

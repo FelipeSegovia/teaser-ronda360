@@ -1,0 +1,204 @@
+---
+/**
+ * Selector de tema: claro / oscuro / sistema (spec 004, RF-7).
+ *
+ * El defecto es «sistema»: sin nada guardado no se escribe `data-theme` y manda
+ * `prefers-color-scheme`. La elección explícita gana en las dos direcciones.
+ *
+ * Usa el `popover` nativo: Esc y cierre al hacer clic fuera sin JS propio. Como
+ * el popover vive en la capa superior, no puede posicionarse con `absolute`
+ * respecto al header; se ancla al disparador con `position: fixed` calculado en
+ * JS al abrir y en cada scroll/resize mientras está abierto.
+ *
+ * El disparador mide 44x44 porque es lo único que cabe en el header a 320 px.
+ */
+import { es } from '../i18n/es';
+
+const t = es.theme;
+const options = [
+  { value: 'light', label: t.light },
+  { value: 'dark', label: t.dark },
+  { value: 'system', label: t.system },
+] as const;
+---
+
+<div class="relative">
+  <button
+    type="button"
+    popovertarget="theme-menu"
+    aria-label={t.label}
+    aria-expanded="false"
+    class="grid h-11 w-11 place-items-center rounded-xl text-ink-soft transition hover:bg-surface-alt hover:text-ink focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none"
+  >
+    <!-- Sol: visible en tema claro -->
+    <svg data-icon="light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round" />
+    </svg>
+    <!-- Luna: visible en tema oscuro -->
+    <svg data-icon="dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="hidden h-5 w-5" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" stroke-linejoin="round" />
+    </svg>
+  </button>
+
+  <div
+    id="theme-menu"
+    popover
+    role="radiogroup"
+    aria-label={t.label}
+    class="fixed inset-auto m-0 min-w-40 rounded-xl border border-hairline bg-surface p-1.5 text-ink shadow-xl"
+  >
+    {options.map((o) => (
+      <button
+        type="button"
+        role="radio"
+        aria-checked="false"
+        data-theme-option={o.value}
+        class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm transition hover:bg-surface-alt focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none aria-checked:font-semibold aria-checked:text-brand"
+      >
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" class="h-4 w-4 shrink-0 opacity-0" data-check aria-hidden="true">
+          <path d="M4 10l4 4 8-8" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        {o.label}
+      </button>
+    ))}
+  </div>
+</div>
+
+<style>
+  /* Apertura suave; sin @starting-style el menú aparece ya en su estado final. */
+  #theme-menu {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease,
+      overlay 0.15s allow-discrete,
+      display 0.15s allow-discrete;
+  }
+
+  #theme-menu:popover-open {
+    opacity: 1;
+    transform: none;
+  }
+
+  @starting-style {
+    #theme-menu:popover-open {
+      opacity: 0;
+      transform: translateY(-0.25rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #theme-menu {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const KEY = 'tema';
+  const GAP = 8; // Separación con el disparador y margen mínimo con el viewport.
+  const root = document.documentElement;
+  const menu = document.querySelector<HTMLElement>('#theme-menu');
+  const trigger = document.querySelector<HTMLButtonElement>('[popovertarget="theme-menu"]');
+  const options = document.querySelectorAll<HTMLButtonElement>('[data-theme-option]');
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+
+  /** Lo guardado, o 'system' cuando no hay nada: el defecto. */
+  function stored(): 'light' | 'dark' | 'system' {
+    try {
+      const v = localStorage.getItem(KEY);
+      return v === 'light' || v === 'dark' ? v : 'system';
+    } catch {
+      return 'system';
+    }
+  }
+
+  /** El tema que se está viendo, que en 'system' depende del sistema operativo. */
+  function effective(): 'light' | 'dark' {
+    const s = stored();
+    return s === 'system' ? (media.matches ? 'dark' : 'light') : s;
+  }
+
+  function render(): void {
+    const choice = stored();
+    const dark = effective() === 'dark';
+
+    trigger?.querySelector('[data-icon="light"]')?.classList.toggle('hidden', dark);
+    trigger?.querySelector('[data-icon="dark"]')?.classList.toggle('hidden', !dark);
+
+    for (const option of options) {
+      const active = option.dataset.themeOption === choice;
+      option.setAttribute('aria-checked', String(active));
+      option.querySelector('[data-check]')?.classList.toggle('opacity-0', !active);
+    }
+  }
+
+  function apply(choice: 'light' | 'dark' | 'system'): void {
+    try {
+      if (choice === 'system') localStorage.removeItem(KEY);
+      else localStorage.setItem(KEY, choice);
+    } catch {
+      // Sin almacenamiento el tema sigue aplicándose, sólo no persiste.
+    }
+
+    if (choice === 'system') root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', choice);
+
+    render();
+  }
+
+  /**
+   * Ancla el menú bajo el disparador. Es `fixed` porque el popover está en la
+   * capa superior: coordenadas de viewport, las mismas que da getBoundingClientRect.
+   */
+  function place(): void {
+    if (!menu || !trigger) return;
+
+    const anchor = trigger.getBoundingClientRect();
+    const width = menu.offsetWidth;
+    const height = menu.offsetHeight;
+
+    // Alineado a la derecha del disparador, sin salirse del viewport.
+    const maxLeft = window.innerWidth - width - GAP;
+    const left = Math.max(GAP, Math.min(anchor.right - width, maxLeft));
+
+    // Debajo del disparador; si no cabe, encima.
+    const below = anchor.bottom + GAP;
+    const top = below + height > window.innerHeight - GAP && anchor.top - GAP - height > GAP
+      ? anchor.top - GAP - height
+      : below;
+
+    menu.style.left = `${Math.round(left)}px`;
+    menu.style.top = `${Math.round(top)}px`;
+  }
+
+  menu?.addEventListener('toggle', (event) => {
+    const open = (event as ToggleEvent).newState === 'open';
+    trigger?.setAttribute('aria-expanded', String(open));
+
+    if (open) {
+      place();
+      // El header es sticky: el disparador se mueve con scroll de rebote y al
+      // cambiar el tamaño de la ventana, así que se reposiciona mientras esté abierto.
+      window.addEventListener('scroll', place, { passive: true });
+      window.addEventListener('resize', place);
+    } else {
+      window.removeEventListener('scroll', place);
+      window.removeEventListener('resize', place);
+    }
+  });
+
+  for (const option of options) {
+    option.addEventListener('click', () => {
+      apply(option.dataset.themeOption as 'light' | 'dark' | 'system');
+      menu?.hidePopover();
+    });
+  }
+
+  // En estado «sistema», seguir al SO sin recargar (RF-1).
+  media.addEventListener('change', render);
+
+  render();
+</script>

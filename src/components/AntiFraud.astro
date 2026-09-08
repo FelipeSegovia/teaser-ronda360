@@ -1,0 +1,41 @@
+---
+/**
+ * La sección diferencial: el caso central de `requirements.md` §6.
+ */
+import { es } from '../i18n/es';
+---
+
+<section class="container-page py-16 sm:py-24">
+  <div class="mx-auto max-w-3xl text-center" data-reveal>
+    <h2 class="text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+      {es.fraud.title}
+    </h2>
+    <p class="mt-5 text-lg text-pretty text-ink-soft">{es.fraud.body}</p>
+  </div>
+
+  <ol class="mx-auto mt-12 grid max-w-4xl gap-4 md:grid-cols-3">
+    {es.fraud.steps.map((item, i) => (
+      <li
+        class="rounded-2xl border border-hairline bg-surface p-6"
+        data-reveal
+        style={`--reveal-delay: ${i * 140}ms`}
+      >
+        <p class="text-sm font-medium tracking-wide text-ink-soft uppercase">
+          {item.step}
+        </p>
+        <p
+          class:list={[
+            'mt-3 text-lg font-semibold',
+            item.tone === 'ok' ? 'text-ink' : 'text-bad',
+          ]}
+        >
+          {item.result}
+        </p>
+      </li>
+    ))}
+  </ol>
+
+  <p class="mx-auto mt-8 max-w-3xl text-center text-pretty text-ink-soft" data-reveal>
+    {es.fraud.footnote}
+  </p>
+</section>
