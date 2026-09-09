@@ -1,4 +1,4 @@
-# Tasks: Landing de acceso anticipado — Ronda Segura
+# Tasks: Landing de acceso anticipado — Ronda360
 
 Ejecutar en orden. Tras cada tarea completada se actualiza
 [`status.md`](./status.md) (regla 4 del `landing/AGENTS.md`).

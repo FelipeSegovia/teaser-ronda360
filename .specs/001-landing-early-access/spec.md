@@ -1,4 +1,4 @@
-# Spec: Landing de acceso anticipado — Ronda Segura
+# Spec: Landing de acceso anticipado — Ronda360
 
 ## Objetivo
 
@@ -10,7 +10,7 @@ el producto y captura el correo de quien quiera sumarse al acceso anticipado.
 El resultado que se busca no es tráfico ni ventas: es **una lista contable de
 correos de gente interesada**.
 
-- Producto: **Ronda Segura**
+- Producto: **Ronda360**
 - Empresa: **Orbital Studio** (marca de la casa, en el footer)
 - Estado del producto: **en desarrollo**. La landing lo dice explícitamente.
 

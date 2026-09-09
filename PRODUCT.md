@@ -27,7 +27,7 @@ cambiaría qué argumento encabeza la landing.
 
 ## Product Purpose
 
-**Ronda Segura** produce evidencia verificable de presencia física de un guardia
+**Ronda360** produce evidencia verificable de presencia física de un guardia
 en cada punto de control de su ronda diaria.
 
 Hoy la ronda deja como prueba una planilla firmada o un mensaje al grupo.
@@ -113,8 +113,8 @@ puede marcarse dos veces en una sesión (D-5), tolerancia de desfase de reloj
 
 ## Brand Commitments
 
-- **Producto: "Ronda Segura".** **Empresa: "Orbital Studio".** La landing es de
-  Orbital Studio y promociona a Ronda Segura.
+- **Producto: "Ronda360".** **Empresa: "Orbital Studio".** La landing es de
+  Orbital Studio y promociona a Ronda360.
 - **Todo el texto visible va en español (Chile).** Es regla no negociable del
   proyecto y debe salir exclusivamente de `src/i18n/es.ts`; cero literales en
   componentes. Identificadores y commits en inglés.

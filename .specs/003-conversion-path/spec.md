@@ -48,7 +48,7 @@ la spec del rediseño, no aquí.
 - La dirección se presenta como acción primaria de ancho completo, no como
   texto subrayado de 186×18 px (medido).
 - El `mailto:` lleva `?subject=` con el asunto que `contact.ts:71` ya compone
-  para la rama del formulario (`Acceso anticipado a Ronda Segura`). Hoy esa
+  para la rama del formulario (`Acceso anticipado a Ronda360`). Hoy esa
   afordancia se construye y se tira.
 - Se ofrece una acción secundaria **"Copiar correo"**, porque en escritorio sin
   cliente de correo configurado el `mailto:` no hace absolutamente nada.

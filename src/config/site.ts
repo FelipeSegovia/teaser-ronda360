@@ -3,7 +3,7 @@
  * Ningún componente escribe estos valores literalmente.
  */
 export const site = {
-  productName: 'Ronda Segura',
+  productName: 'Ronda360',
   /** Nombre en el asunto del correo de contacto (formulario y mailto). */
   contactBrandName: 'Ronda360',
   companyName: 'Orbital Studio',
@@ -12,5 +12,5 @@ export const site = {
   contactEmail: 'contacto@orbitalstudio.cl',
 
   // TODO: confirmar el dominio definitivo antes de publicar.
-  url: 'https://rondasegura.cl',
+  url: 'https://ronda360.cl',
 } as const;

@@ -1,5 +1,5 @@
 ---
-target: landing de Ronda Segura
+target: landing de Ronda360
 total_score: 18
 max_score: 32
 na_heuristics: 7,10
@@ -13,7 +13,7 @@ slug: src-pages-index-astro
 ---
 Method: dual-agent (A: revisión de diseño · B: detector + evidencia de navegador)
 
-# Critique — Landing de Ronda Segura
+# Critique — Landing de Ronda360
 
 `src/pages/index.astro` · Modo Persuade · primera corrida
 

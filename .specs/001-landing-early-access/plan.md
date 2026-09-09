@@ -1,4 +1,4 @@
-# Plan: Landing de acceso anticipado — Ronda Segura
+# Plan: Landing de acceso anticipado — Ronda360
 
 Diseño técnico de [`spec.md`](./spec.md). Astro 7.3.1, salida estática, estilos
 con **Tailwind CSS v4**, sin frameworks de UI (regla 1 del `landing/AGENTS.md`).
@@ -50,7 +50,7 @@ Punto único de edición para marca y contacto.
 
 ```ts
 export const site = {
-  productName: 'Ronda Segura',
+  productName: 'Ronda360',
   companyName: 'Orbital Studio',
   // TODO: confirmar el correo definitivo de Orbital Studio.
   contactEmail: 'contacto@orbitalstudio.cl',
