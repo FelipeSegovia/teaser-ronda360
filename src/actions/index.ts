@@ -3,6 +3,7 @@ import { z } from 'astro/zod';
 import { Resend } from 'resend';
 
 import { site } from '../config/site';
+import { resendFrom } from '../lib/contact-config';
 import { contactSubject, isValidEmail } from '../lib/contact';
 
 function escapeHtml(value: string): string {
@@ -49,7 +50,7 @@ export const server = {
         }
 
         const apiKey = import.meta.env.RESEND_API_KEY?.trim() ?? '';
-        const from = import.meta.env.RESEND_FROM?.trim() ?? '';
+        const from = resendFrom();
         if (!apiKey || !from) {
           throw new ActionError({
             code: 'INTERNAL_SERVER_ERROR',
