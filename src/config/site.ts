@@ -4,6 +4,8 @@
  */
 export const site = {
   productName: 'Ronda Segura',
+  /** Nombre en el asunto del correo de contacto (formulario y mailto). */
+  contactBrandName: 'Ronda360',
   companyName: 'Orbital Studio',
 
   // TODO: confirmar el correo corporativo definitivo de Orbital Studio.

@@ -44,7 +44,7 @@ export function isValidEmail(value: string): boolean {
  * cualquiera de los dos caminos.
  */
 export function contactSubject(): string {
-  return `Acceso anticipado a ${site.productName}`;
+  return `Acceso anticipado a ${site.contactBrandName}`;
 }
 
 export async function submitContact(input: ContactInput): Promise<ContactResult> {
