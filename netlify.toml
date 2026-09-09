@@ -1,4 +1,8 @@
-# El comentario de ejemplo en `.env.example` puede coincidir con el valor
-# real de RESEND_FROM en Netlify; el secrets scanning lo trata como leak.
+# RESEND_FROM es el correo público de contacto (el mismo que site.contactEmail),
+# no un secreto. El scanner de Netlify lo trata como leak porque coincide con
+# site.ts, specs y el HTML de la landing. RESEND_API_KEY sí se sigue escaneando.
+#
+# .env.example se omite por si un comentario vuelve a coincidir con un valor real.
 [build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "RESEND_FROM"
   SECRETS_SCAN_OMIT_PATHS = ".env.example"
