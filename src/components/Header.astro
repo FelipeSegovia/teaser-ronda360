@@ -2,29 +2,33 @@
 import { Image } from 'astro:assets';
 import { es } from '../i18n/es';
 import { site } from '../config/site';
-import logoLight from '../assets/ronda360-light.webp';
-import logoDark from '../assets/ronda360-dark.webp';
+import logoLight from '../assets/ronda-control_azul.webp';
+import logoDark from '../assets/ronda-control_blanco.webp';
 import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <header class="site-header sticky top-0 z-40 w-full">
-  <div class="container-page flex h-16 items-center justify-between gap-4">
-    <a href="#hero" class="flex items-center" aria-label={site.productName}>
+  <div class="container-page flex h-16 items-center justify-between gap-3 sm:gap-4">
+    <a
+      href="#hero"
+      class="flex h-11 shrink-0 items-center overflow-hidden"
+      aria-label={site.productName}
+    >
       <Image
         src={logoLight}
         alt=""
-        width={105}
+        width={370}
         densities={[1, 2]}
         loading="eager"
-        class="theme-light-only h-9 w-auto"
+        class="theme-light-only h-11 w-11 object-left object-cover sm:w-auto"
       />
       <Image
         src={logoDark}
         alt=""
-        width={105}
+        width={370}
         densities={[1, 2]}
         loading="eager"
-        class="theme-dark-only h-9 w-auto"
+        class="theme-dark-only h-11 w-11 object-left object-cover sm:w-auto"
       />
     </a>
 

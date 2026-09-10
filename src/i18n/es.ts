@@ -7,7 +7,7 @@
  */
 export const es = {
   meta: {
-    title: 'Ronda360 — Evidencia real de las rondas de tus guardias',
+    title: 'RondaControl — Evidencia real de las rondas de tus guardias',
     description:
       'Control de rondas que combina el escaneo del QR del punto con la ' +
       'validación de ubicación a 3 metros. Funciona sin conexión. En ' +
@@ -28,7 +28,7 @@ export const es = {
     badge: 'En desarrollo · Acceso anticipado',
     title: 'La evidencia de que tu guardia estuvo ahí',
     subtitle:
-      'Ronda360 combina el escaneo del QR pegado en el punto con la ' +
+      'RondaControl combina el escaneo del QR pegado en el punto con la ' +
       'ubicación del teléfono. Son dos señales que no se pueden falsificar ' +
       'por separado.',
     cta: 'Quiero el acceso anticipado',
@@ -76,7 +76,7 @@ export const es = {
   },
 
   caps: {
-    title: 'Lo que hace distinto a Ronda360',
+    title: 'Lo que hace distinto a RondaControl',
     items: [
       {
         title: 'QR y ubicación, juntos',
@@ -144,13 +144,13 @@ export const es = {
     ],
     footnote:
       'Y si intenta el camino inverso —quedarse lejos y simular la ubicación ' +
-      'con una app—, Ronda360 lo detecta y tampoco activa la marca.',
+      'con una app—, RondaControl lo detecta y tampoco activa la marca.',
   },
 
   finalCta: {
     title: '¿Te sirve algo así?',
     body:
-      'Ronda360 está en desarrollo. Si administras guardias o rondas, ' +
+      'RondaControl está en desarrollo. Si administras guardias o rondas, ' +
       'déjanos tu correo: queremos saber cuánta gente lo necesita antes de ' +
       'construirlo completo, y quienes se sumen ahora lo van a probar primero.',
     cta: 'Quiero el acceso anticipado',
@@ -196,7 +196,7 @@ export const es = {
   },
 
   footer: {
-    tagline: 'Ronda360 es un producto de Orbital Studio.',
+    tagline: 'RondaControl es un producto de Orbital Studio.',
     contactIntro: 'Escríbenos a',
     rights: 'Todos los derechos reservados.',
     logoAlt: 'Orbital Studio',

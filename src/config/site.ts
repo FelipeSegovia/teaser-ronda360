@@ -3,14 +3,14 @@
  * Ningún componente escribe estos valores literalmente.
  */
 export const site = {
-  productName: 'Ronda360',
+  productName: 'RondaControl',
   /** Nombre en el asunto del correo de contacto (formulario y mailto). */
-  contactBrandName: 'Ronda360',
+  contactBrandName: 'RondaControl',
   companyName: 'Orbital Studio',
 
   // TODO: confirmar el correo corporativo definitivo de Orbital Studio.
   contactEmail: 'contacto@orbitalstudio.cl',
 
   // TODO: confirmar el dominio definitivo antes de publicar.
-  url: 'https://ronda360.cl',
+  url: 'https://rondacontrol.cl',
 } as const;

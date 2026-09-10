@@ -77,9 +77,9 @@ Action. El servidor es el respaldo.
 
 - Asunto: `contactSubject()`.
 - HTML y text: correo del interesado, comentario o «(sin comentario)», origen
-  «Landing Ronda360».
+  «Landing RondaControl».
 - `from`: `import.meta.env.RESEND_FROM` (ejemplo de prueba:
-  `Ronda360 <onboarding@resend.dev>`).
+  `RondaControl <onboarding@resend.dev>`).
 - `to`: `site.contactEmail`.
 - `replyTo`: email recortado del visitante.
 
